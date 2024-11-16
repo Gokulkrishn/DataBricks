@@ -68,4 +68,8 @@ result_final_df.write.mode("overwrite").partitionBy('race_id').parquet("/mnt/for
 
 # COMMAND ----------
 
+spark.read.parquet("/mnt/formula1dl/processed/results").show()
+
+# COMMAND ----------
+
 
