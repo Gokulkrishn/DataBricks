@@ -4,7 +4,15 @@ from pyspark.sql.functions import current_timestamp
 
 # COMMAND ----------
 
-lap_time_df = spark.read.csv("/mnt/databrickudemy/raw/lap_times/lap_times_split*")
+# MAGIC %run "../Includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../Includes/common_functions"
+
+# COMMAND ----------
+
+lap_time_df = spark.read.csv(f"{raw_folder}/lap_times/lap_times_split*")
 
 # COMMAND ----------
 
@@ -23,7 +31,7 @@ lap_times_schema = StructType(fields=[StructField("raceId", IntegerType(), False
 
 # COMMAND ----------
 
-lap_time_df = spark.read.schema(lap_times_schema).csv("/mnt/databrickudemy/raw/lap_times/*.csv")
+lap_time_df = spark.read.schema(lap_times_schema).csv(f"{raw_folder}/lap_times/*.csv")
 
 # COMMAND ----------
 
@@ -31,17 +39,17 @@ lap_time_df.show(2)
 
 # COMMAND ----------
 
-final_df = lap_time_df.withColumnRenamed("driverId", "driver_id") \
-.withColumnRenamed("raceId", "race_id") \
-.withColumn("ingestion_date", current_timestamp())
+final_df = add_ingestion_date(lap_time_df)\
+          .withColumnRenamed("driverId", "driver_id") \
+          .withColumnRenamed("raceId", "race_id")
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet("/mnt/databrickudemy/processed/lap_times")
+final_df.write.mode("overwrite").parquet(f"{processed_folder}/lap_times")
 
 # COMMAND ----------
 
-spark.read.parquet("/mnt/databrickudemy/processed/lap_times").display(2)
+spark.read.parquet(f"{processed_folder}/lap_times").display(2)
 
 # COMMAND ----------
 

@@ -4,7 +4,15 @@ from pyspark.sql.types import StructType,StructField, StringType, IntegerType, D
 
 # COMMAND ----------
 
-drivers_df = spark.read.json("/mnt/databrickudemy/raw/drivers.json")
+# MAGIC %run "../Includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../Includes/common_functions"
+
+# COMMAND ----------
+
+drivers_df = spark.read.json(f"{raw_folder}/drivers.json")
 
 # COMMAND ----------
 
@@ -31,13 +39,12 @@ drivers_schema = StructType(fields=[StructField("driverId", StringType(), False)
 
 # COMMAND ----------
 
-drivers_df= spark.read.schema(drivers_schema).json("/mnt/databrickudemy/raw/drivers.json")
+drivers_df= spark.read.schema(drivers_schema).json(f"{raw_folder}/drivers.json")
 
 # COMMAND ----------
 
-drivers_renamed_df = drivers_df.withColumnRenamed("driverId", "driver_id")\
+drivers_renamed_df = add_ingestion_date(drivers_df).withColumnRenamed("driverId", "driver_id")\
                                .withColumnRenamed("driverRef", "driver_ref")\
-                               .withColumn("ingestion_date", current_timestamp())\
                                .withColumn("driver_name",concat(col("name.forename"), lit(" "), col("name.surname")))
 
 # COMMAND ----------
@@ -50,11 +57,11 @@ driver_final_df.show(2,truncate=False)
 
 # COMMAND ----------
 
-drivers_df.write.mode("overwrite").parquet("/mnt/databrickudemy/processed/drivers")
+driver_final_df.write.mode("overwrite").parquet(f"{processed_folder}/drivers")
 
 # COMMAND ----------
 
-spark.read.parquet("/mnt/databrickudemy/processed/drivers").show(2,truncate=False)
+spark.read.parquet(f"{processed_folder}/drivers").show(2,truncate=False)
 
 # COMMAND ----------
 

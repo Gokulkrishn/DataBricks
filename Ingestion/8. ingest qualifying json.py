@@ -4,7 +4,15 @@ from pyspark.sql.functions import current_timestamp
 
 # COMMAND ----------
 
-qualifying_df = spark.read.option("multiline",True).json("/mnt/databrickudemy/raw/qualifying/")
+# MAGIC %run "../Includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../Includes/common_functions"
+
+# COMMAND ----------
+
+qualifying_df = spark.read.option("multiline",True).json(f"{raw_folder}/qualifying/")
 
 # COMMAND ----------
 
@@ -25,7 +33,7 @@ qualifying_schema = StructType(fields=[StructField("qualifyId", IntegerType(), F
 
 # COMMAND ----------
 
-qualifying_df = spark.read.schema(qualifying_schema).option("multiline",True).json("/mnt/databrickudemy/raw/qualifying/")
+qualifying_df = spark.read.schema(qualifying_schema).option("multiline",True).json(f"{raw_folder}/qualifying/")
 
 # COMMAND ----------
 
@@ -37,11 +45,11 @@ final_df = qualifying_df.withColumnRenamed("qualifyId", "qualify_id") \
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet("/mnt/databrickudemy/processed/qualifying")
+final_df.write.mode("overwrite").parquet(f"{processed_folder}/qualifying")
 
 # COMMAND ----------
 
-display(spark.read.parquet('/mnt/databrickudemy/processed/qualifying'))
+display(spark.read.parquet(f'{processed_folder}/qualifying'))
 
 # COMMAND ----------
 

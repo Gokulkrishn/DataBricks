@@ -4,7 +4,15 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType,F
 
 # COMMAND ----------
 
-results_df = spark.read.option('inferSchema', True).json("/mnt/databrickudemy/raw/results.json")
+# MAGIC %run "../Includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../Includes/common_functions"
+
+# COMMAND ----------
+
+results_df = spark.read.option('inferSchema', True).json(f"{raw_folder}/results.json")
 
 
 # COMMAND ----------
@@ -34,7 +42,7 @@ results_schema = StructType(fields=[StructField("resultId", IntegerType(), False
 
 # COMMAND ----------
 
-result_df = spark.read.schema(results_schema).json("/mnt/databrickudemy/raw/results.json")
+result_df = spark.read.schema(results_schema).json(f"{raw_folder}/results.json")
 
 # COMMAND ----------
 
@@ -42,7 +50,7 @@ result_df.printSchema()
 
 # COMMAND ----------
 
-results_with_columns_df = results_df.withColumnRenamed("resultId", "result_id") \
+results_with_columns_df = add_ingestion_date(results_df).withColumnRenamed("resultId", "result_id") \
                                     .withColumnRenamed("raceId", "race_id") \
                                     .withColumnRenamed("driverId", "driver_id") \
                                     .withColumnRenamed("constructorId", "constructor_id") \
@@ -50,8 +58,7 @@ results_with_columns_df = results_df.withColumnRenamed("resultId", "result_id") 
                                     .withColumnRenamed("positionOrder", "position_order") \
                                     .withColumnRenamed("fastestLap", "fastest_lap") \
                                     .withColumnRenamed("fastestLapTime", "fastest_lap_time") \
-                                    .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed") \
-                                    .withColumn("ingestion_date", current_timestamp()) 
+                                    .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed")
 
 # COMMAND ----------
 
@@ -63,12 +70,12 @@ result_final_df.show(10)
 
 # COMMAND ----------
 
-result_final_df.write.mode("overwrite").partitionBy('race_id').parquet("/mnt/formula1dl/processed/results")
+result_final_df.write.mode("overwrite").partitionBy('race_id').parquet(f"{processed_folder}/results")
 
 
 # COMMAND ----------
 
-spark.read.parquet("/mnt/formula1dl/processed/results").show()
+spark.read.parquet(f"{processed_folder}/results").show()
 
 # COMMAND ----------
 

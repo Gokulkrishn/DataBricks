@@ -1,6 +1,27 @@
 # Databricks notebook source
 from pyspark.sql.types import StructField,ShortType,IntegerType, StringType, DoubleType, StructType
-from pyspark.sql.functions import col, lit, current_timestamp
+from pyspark.sql.functions import col, lit
+
+# COMMAND ----------
+
+# MAGIC %run "../Includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../Includes/common_functions"
+
+# COMMAND ----------
+
+dbutils.widgets.removeAll()  # Clears any existing widgets
+
+
+# COMMAND ----------
+
+try:
+    v_data_source = dbutils.widgets.get("p_data_source")
+    print(f"Debug: p_data_source value: {v_data_source}")
+except Exception as e:
+    print(f"Error: Widget 'p_data_source' not found. Details: {str(e)}")
 
 # COMMAND ----------
 
@@ -31,7 +52,7 @@ circuits_schema = StructType(fields=[
 circuits_df = spark.read\
   .option("header",True)\
   .schema(circuits_schema)\
-  .csv('/mnt/databrickudemy/raw/circuits.csv')
+  .csv(f'{raw_folder}/circuits.csv')
 
 # COMMAND ----------
 
@@ -66,7 +87,13 @@ circuits_selected_df.show(2)
 
 # COMMAND ----------
 
-circuits_selected_df.select(circuits_selected_df["circuitId"].alias("circuit_Id"),circuits_selected_df["circuitRef"],circuits_selected_df["name"],circuits_selected_df["location"],circuits_selected_df["country"],circuits_selected_df["lat"].alias("latitude"),circuits_selected_df["lng"].alias("longitude"))
+circuits_selected_df.select(circuits_selected_df["circuitId"].alias("circuit_Id")\
+            ,circuits_selected_df["circuitRef"]\
+            ,circuits_selected_df["name"]\
+            ,circuits_selected_df["location"]\
+            ,circuits_selected_df["country"]\
+            ,circuits_selected_df["lat"].alias("latitude")\
+            ,circuits_selected_df["lng"].alias("longitude"))
 
 # COMMAND ----------
 
@@ -81,7 +108,8 @@ circuits_renamed_df = circuits_selected_df.withColumnRenamed("circuitId","circui
                                  .withColumnRenamed("location","location")\
                                  .withColumnRenamed("country","country")\
                                  .withColumnRenamed("lat","latitude")\
-                                 .withColumnRenamed("lng","longitude") 
+                                 .withColumnRenamed("lng","longitude")\
+                                 .withColumn("p_data_source",lit(v_data_source)) 
 
 # COMMAND ----------
 
@@ -94,7 +122,7 @@ circuits_renamed_df.show(2)
 
 # COMMAND ----------
 
-circuits_final_df = circuits_renamed_df.withColumn("ingeston_date",current_timestamp())
+circuits_final_df = add_ingestion_date(circuits_renamed_df)
 
 # COMMAND ----------
 
@@ -102,15 +130,11 @@ circuits_final_df.show(2)
 
 # COMMAND ----------
 
-circuits_final_df.select('ingeston_date').show(2,truncate=False)
+circuits_final_df.write.mode('overwrite').parquet(f"{processed_folder}/circuits")
 
 # COMMAND ----------
 
-circuits_final_df.write.mode('overwrite').parquet("/mnt/databrickudemy/processed/circuits")
-
-# COMMAND ----------
-
-spark.read.parquet("/mnt/databrickudemy/processed/circuits").show(2,truncate=False)
+spark.read.parquet(f"{processed_folder}/circuits").show(2,truncate=False)
 
 # COMMAND ----------
 
