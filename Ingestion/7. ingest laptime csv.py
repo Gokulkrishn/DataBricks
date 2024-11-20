@@ -45,11 +45,16 @@ final_df = add_ingestion_date(lap_time_df)\
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder}/lap_times")
+dbutils.fs.rm(f"{processed_folder}/lap_times", True)
 
 # COMMAND ----------
 
-spark.read.parquet(f"{processed_folder}/lap_times").display(2)
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.lap_times")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from f1_processed.lap_times
 
 # COMMAND ----------
 

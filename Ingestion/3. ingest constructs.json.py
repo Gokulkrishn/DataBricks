@@ -39,11 +39,16 @@ constructor_final_df.show(1)
 
 # COMMAND ----------
 
-constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder}/constructor")
+dbutils.fs.rm(f"{processed_folder}/constructor", True)
 
 # COMMAND ----------
 
-spark.read.parquet(f"{processed_folder}/constructor").display(1)
+constructor_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.constructor")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from f1_processed.constructor;
 
 # COMMAND ----------
 

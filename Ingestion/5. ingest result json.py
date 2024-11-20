@@ -74,13 +74,13 @@ result_final_df.printSchema()
 
 # COMMAND ----------
 
-result_final_df.write.mode("overwrite").partitionBy('race_id').parquet(f"{processed_folder}/results")
+dbutils.fs.rm(f"{processed_folder}/results",True)
+
+# COMMAND ----------
+
+result_final_df.write.mode("overwrite").format('race_id').format("parquet").saveAsTable("f1_processed.results")
 
 
 # COMMAND ----------
 
-spark.read.parquet(f"{processed_folder}/results").show()
 
-# COMMAND ----------
-
-result_final_df.printSchema()

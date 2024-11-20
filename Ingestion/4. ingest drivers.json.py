@@ -57,15 +57,16 @@ driver_final_df.show(2,truncate=False)
 
 # COMMAND ----------
 
-driver_final_df.write.mode("overwrite").parquet(f"{processed_folder}/drivers")
+dbutils.fs.rm("/mnt/databrickudemy/processed/drivers",True)
 
 # COMMAND ----------
 
-spark.read.parquet(f"{processed_folder}/drivers").show(2,truncate=False)
+driver_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.drivers")
 
 # COMMAND ----------
 
-print(processed_folder)
+# MAGIC %sql
+# MAGIC select * from f1_processed.drivers;
 
 # COMMAND ----------
 

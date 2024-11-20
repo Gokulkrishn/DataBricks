@@ -12,19 +12,6 @@ from pyspark.sql.functions import col, lit
 
 # COMMAND ----------
 
-dbutils.widgets.removeAll()  # Clears any existing widgets
-
-
-# COMMAND ----------
-
-try:
-    v_data_source = dbutils.widgets.get("p_data_source")
-    print(f"Debug: p_data_source value: {v_data_source}")
-except Exception as e:
-    print(f"Error: Widget 'p_data_source' not found. Details: {str(e)}")
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Schema
 
@@ -53,10 +40,6 @@ circuits_df = spark.read\
   .option("header",True)\
   .schema(circuits_schema)\
   .csv(f'{raw_folder}/circuits.csv')
-
-# COMMAND ----------
-
-circuits_df.show(2)
 
 # COMMAND ----------
 
@@ -108,8 +91,7 @@ circuits_renamed_df = circuits_selected_df.withColumnRenamed("circuitId","circui
                                  .withColumnRenamed("location","location")\
                                  .withColumnRenamed("country","country")\
                                  .withColumnRenamed("lat","latitude")\
-                                 .withColumnRenamed("lng","longitude")\
-                                 .withColumn("p_data_source",lit(v_data_source)) 
+                                 .withColumnRenamed("lng","longitude") 
 
 # COMMAND ----------
 
@@ -130,11 +112,16 @@ circuits_final_df.show(2)
 
 # COMMAND ----------
 
-circuits_final_df.write.mode('overwrite').parquet(f"{processed_folder}/circuits")
+dbutils.fs.rm("/mnt/databrickudemy/processed/circuits", True)
 
 # COMMAND ----------
 
-spark.read.parquet(f"{processed_folder}/circuits").show(2,truncate=False)
+circuits_final_df.write.mode('overwrite').format("parquet").saveAsTable("f1_processed.circuits")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.circuits
 
 # COMMAND ----------
 

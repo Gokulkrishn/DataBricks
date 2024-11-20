@@ -36,11 +36,16 @@ final_df = add_ingestion_date(pit_stops_df)\
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder}/pit_stops")
+dbutils.fs.rm(f"{processed_folder}/pit_stops", True)
 
 # COMMAND ----------
 
-spark.read.parquet(f"{processed_folder}/pit_stops").display()
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.pit_stops")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from f1_processed.pit_stops
 
 # COMMAND ----------
 

@@ -53,11 +53,20 @@ race_final_df = race_newcol_df.select("race_id","race_year","round","circuit_id"
 
 # COMMAND ----------
 
-race_final_df.write.mode("overwrite").partitionBy('race_year').parquet(f"{processed_folder}/races")
+dbutils.fs.rm(f"{processed_folder}/races", True)
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder}/races"))
+# race_final_df.write.mode("overwrite").partitionBy('race_year').parquet(f"{processed_folder}/races")
+
+# COMMAND ----------
+
+race_final_df.write.mode("overwrite").partitionBy('race_year').format("parquet").saveAsTable("f1_processed.races")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from f1_processed.races
 
 # COMMAND ----------
 

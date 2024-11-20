@@ -45,11 +45,16 @@ final_df = qualifying_df.withColumnRenamed("qualifyId", "qualify_id") \
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder}/qualifying")
+dbutils.fs.rm(f"{processed_folder}/qualifying",True)
 
 # COMMAND ----------
 
-display(spark.read.parquet(f'{processed_folder}/qualifying'))
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.qualifying")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from f1_processed.qualifying
 
 # COMMAND ----------
 
