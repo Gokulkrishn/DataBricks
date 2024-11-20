@@ -32,4 +32,8 @@ final_df.filter("race_year = 2019").show()
 
 # COMMAND ----------
 
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.constructor_standings")
+
+# COMMAND ----------
+
 

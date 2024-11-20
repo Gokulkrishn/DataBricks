@@ -28,8 +28,4 @@ final_df = driver_standings_df.withColumn("rank",rank().over(driver_rank_spec))
 
 # COMMAND ----------
 
-final_df.show()
-
-# COMMAND ----------
-
-
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.driver_standings")

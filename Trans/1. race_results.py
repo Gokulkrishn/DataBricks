@@ -28,14 +28,34 @@ results_df = spark.read.parquet(f"{processed_folder}/results")\
 
 # COMMAND ----------
 
+results_df.show()
+
+# COMMAND ----------
+
+results_df.show()
+
+# COMMAND ----------
+
 constructor_df = spark.read.parquet(f"{processed_folder}/constructor")\
   .withColumnRenamed("name","team")
+
+# COMMAND ----------
+
+constructor_df = constructor_df.withColumnRenamed("constructorId", "constructor_id")
+
+# COMMAND ----------
+
+constructor_df.show()
 
 # COMMAND ----------
 
 drivers_df = spark.read.parquet(f"{processed_folder}/drivers")\
   .withColumnRenamed("number","driver_number")\
   .withColumnRenamed("nationality","driver_nationality")
+
+# COMMAND ----------
+
+drivers_df.show()
 
 # COMMAND ----------
 
@@ -51,11 +71,11 @@ final_df = add_ingestion_date(race_result_df)
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{presentation_folder}/race_results")
+dbutils.fs.rm(f"{presentation_folder}/race_results",True)
 
 # COMMAND ----------
 
-spark.read.parquet(f"{presentation_folder}/race_results").select("race_year").distinct().display()
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.race_results")
 
 # COMMAND ----------
 
