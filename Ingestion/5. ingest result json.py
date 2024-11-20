@@ -70,6 +70,10 @@ result_final_df.show(10)
 
 # COMMAND ----------
 
+result_final_df.printSchema()
+
+# COMMAND ----------
+
 result_final_df.write.mode("overwrite").partitionBy('race_id').parquet(f"{processed_folder}/results")
 
 
@@ -79,4 +83,4 @@ spark.read.parquet(f"{processed_folder}/results").show()
 
 # COMMAND ----------
 
-
+result_final_df.printSchema()

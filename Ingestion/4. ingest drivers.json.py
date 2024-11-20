@@ -65,4 +65,8 @@ spark.read.parquet(f"{processed_folder}/drivers").show(2,truncate=False)
 
 # COMMAND ----------
 
+print(processed_folder)
+
+# COMMAND ----------
+
 

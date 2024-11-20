@@ -43,7 +43,7 @@ race_result_df = results_df.join(race_circuit_df,race_circuit_df.race_id==result
                           .join(drivers_df,drivers_df.driver_id==results_df.driver_id)\
                           .join(constructor_df,constructor_df.constructor_id==results_df.constructor_id)\
                           .select("race_year","race_name","race_date","circuit_location","driver_name",\
-                          "driver_number","driver_nationality","team","grid","fastest_lap","race_time","points")                            
+                          "driver_number","driver_nationality","team","grid","fastest_lap","race_time","points","position")                            
 
 # COMMAND ----------
 
@@ -51,15 +51,11 @@ final_df = add_ingestion_date(race_result_df)
 
 # COMMAND ----------
 
-final_df.show(1)
-
-# COMMAND ----------
-
-final_df.filter("race_year=2020 and race_name='Abu Dhabi Grand Prix'").orderBy(final_df.points.desc()).show(2)
-
-# COMMAND ----------
-
 final_df.write.mode("overwrite").parquet(f"{presentation_folder}/race_results")
+
+# COMMAND ----------
+
+spark.read.parquet(f"{presentation_folder}/race_results").select("race_year").distinct().display()
 
 # COMMAND ----------
 
