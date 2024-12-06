@@ -7,9 +7,24 @@
 
 # COMMAND ----------
 
-races_df = spark.read.parquet(f"{processed_folder}/races")\
-  .withColumnRenamed("name","race_name")\
-  .withColumnRenamed("race_timestamp","race_date")
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+# COMMAND ----------
+
+drivers_df = spark.read.parquet(f"{processed_folder}/races") \
+.withColumnRenamed("number", "driver_number") \
+.withColumnRenamed("name", "driver_name") \
+.withColumnRenamed("nationality", "driver_nationality") 
+
+# COMMAND ----------
+
+processed_folder
+
+# COMMAND ----------
+
+constructors_df = spark.read.parquet(f"{processed_folder}/constructors") \
+.withColumnRenamed("name", "team") 
 
 # COMMAND ----------
 

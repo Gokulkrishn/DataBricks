@@ -17,4 +17,12 @@ def mount_containers(storage_account,container_name):
 
 # COMMAND ----------
 
+mount_containers("databrickudemy","demo")
+
+# COMMAND ----------
+
+dbutils.fs.ls("/mnt/databrickudemy/raw")
+
+# COMMAND ----------
+
 

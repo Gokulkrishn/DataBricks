@@ -45,7 +45,7 @@ constructor_final_df = add_ingestion_date(constructor_dropped_df)\
 
 # COMMAND ----------
 
-constructor_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.constructor")
+constructor_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.constructor")
 
 # COMMAND ----------
 

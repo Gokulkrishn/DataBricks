@@ -17,6 +17,7 @@ v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
+
 dbutils.widgets.text("key", "")
 
 # COMMAND ----------
@@ -25,11 +26,8 @@ dbutils.widgets.get("key")
 
 # COMMAND ----------
 
+
 v_file_date
-
-# COMMAND ----------
-
-dbutils.notebook.exit("Success")
 
 # COMMAND ----------
 
@@ -137,7 +135,7 @@ circuits_final_df.show(2)
 # dbutils.fs.rm("dbfs:/mnt/databrickudemy/processed/circuits", True)  # Recursively delete the folder
 
 # Then write the table again
-circuits_final_df.write.mode('append').format("parquet").saveAsTable("f1_processed.circuits")
+circuits_final_df.write.mode('overwrite').format("delta").saveAsTable("f1_processed.circuits")
 
 
 # COMMAND ----------
@@ -152,7 +150,7 @@ circuits_final_df.write.mode('append').format("parquet").saveAsTable("f1_process
 
 # COMMAND ----------
 
-cirdbutils.notebook.exit("Success")
+dbutils.notebook.exit("Success")
 
 # COMMAND ----------
 

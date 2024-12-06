@@ -1,23 +1,23 @@
 -- Databricks notebook source
-create database if not exists demo;
+DROP DATABASE IF EXISTS f1_processed CASCADE;
 
 -- COMMAND ----------
 
-show databases;
+CREATE DATABASE IF NOT EXISTS f1_processed
+LOCATION "/mnt/formula1dl/processed";
 
 -- COMMAND ----------
 
-describe database default;
+DROP DATABASE IF EXISTS f1_presentation CASCADE;
 
 -- COMMAND ----------
 
--- MAGIC %python
--- MAGIC results_df = spark.read.parquet("/mnt/databrickudemy/presentation/race_results")
+CREATE DATABASE IF NOT EXISTS f1_presentation 
+LOCATION "/mnt/formula1dl/presentation";
 
 -- COMMAND ----------
 
--- MAGIC %python
--- MAGIC results_df.write.format("parquet").saveAsTable("demo.results_df_python")
+select * from f1_presentation.drivers;
 
 -- COMMAND ----------
 

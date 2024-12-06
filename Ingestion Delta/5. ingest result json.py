@@ -46,7 +46,7 @@ result_df = spark.read.schema(results_schema).json(f"{raw_folder}/{v_file_date}/
 
 # COMMAND ----------
 
-results_with_columns_df = add_ingestion_date(result_df).withColumnRenamed("resultId", "result_id") \
+results_with_columns_df = add_ingestion_date(results_df).withColumnRenamed("resultId", "result_id") \
                                     .withColumnRenamed("raceId", "race_id") \
                                     .withColumnRenamed("driverId", "driver_id") \
                                     .withColumnRenamed("constructorId", "constructor_id") \
@@ -63,25 +63,9 @@ result_final_df = results_with_columns_df.drop("statusId")
 
 # COMMAND ----------
 
-merge_condition = "tgt.race_id = src.race_id AND tgt.driver_id = src.driver_id AND tgt.stop = src.stop AND tgt.race_id = src.race_id"
-merge_delta_data(result_final_df, 'f1_processed', 'pit_stops', processed_folder, merge_condition, 'race_id')
-
+overwrite_partition(result_final_df,"f1_processed","results","race_id")
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC select race_id,count(*) from f1_processed.results group by race_id order by race_id desc;
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SHOW TABLES;
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC Use f1_processed;
-
-# COMMAND ----------
-
-
